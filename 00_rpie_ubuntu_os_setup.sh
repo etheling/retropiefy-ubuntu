@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+## RetroPie-fy Ubuntu Server install. Part I: massage Ubuntu to our liking.
+
 ##
 ## Variables to control setup
 
@@ -41,7 +43,7 @@ ______     _            ______ _        _   _ _                 _
 RetroPie-fy Ubuntu Server install. Part I: massage Ubuntu to our liking....
 URL: https://github.com/etheling/retropiefy-ubuntu
 
-This script is based on Ubuntu Retropie install script by MisterB
+This script is derivative of Ubuntu Retropie install script by MisterB
 (https://github.com/MizterB/RetroPie-Setup-Ubuntu), and on ideas and expirements
 discussed in RetroPie forums (https://retropie.org.uk/forum/post/156839).
 
@@ -269,8 +271,8 @@ function install_dependencies() {
 	## unify Wayland / X.org experience by using i3 for X.org and Sway for Wayland
 	xorg dbus-x11 wayland-protocols i3 unclutter xdotool sway
 
-	## Wayland native image viewer (to replace fbi/feh)
-	imv exiftool
+	## Wayland native image viewer (to replace fbi/feh), and other media add-ons
+	imv exiftool ffmpeg imagemagick
 	
 	## FIXME: move MESA here and run update MESA before this....
     )
@@ -1184,12 +1186,15 @@ case "\${RETROPIE_SESSION_TYPE}" in
 
   wayland)
     source "$USER_HOME/.env-wayland"
-    sway >/dev/null 2>&1    
+    sway >/dev/shm/sway.log 2>&1
     ;;
 
   x11)
     source "$USER_HOME/.env-xorg"
-    startx
+    startx >/dev/shm/xorg.log 2>&1
+    ;;
+  shell)
+    echo "Set environment via 'source ~/.env-{kmsdrm|wayland|x11}'"
     ;;
   *)
     echo "WARNING: Unknown RETROPIE_SESSION_TYPE: \${RETROPIE_SESSION_TYPE} - environment NOT properly set-up"

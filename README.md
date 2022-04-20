@@ -1,2 +1,2 @@
 # retropiefy-ubuntu
-NIH yes
+NIH yes. Soon. Real soon. Like this year or the next.

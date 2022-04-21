@@ -78,10 +78,10 @@ RetroPie-fy Ubuntu Server install. Part III: Install and patch RetroPie.
 URL: https://github.com/etheling/retropiefy-ubuntu
 
 This script is derivative of Ubuntu Retropie install script by MisterB
-(https://github.com/MizterB/RetroPie-Setup-Ubuntu), and on ideas and expirements
+(https://github.com/MizterB/RetroPie-Setup-Ubuntu), and of ideas and expirements
 discussed in RetroPie forums (https://retropie.org.uk/forum/post/156839).
 
-This script will perform following actions to install RetroPie:
+This script performs following actions:
 - Clone and install RetroPie from official GitHub repo
 - Install additional RetroArch cores
 - Install SLang and GLSL shaders from official RetroArch repo

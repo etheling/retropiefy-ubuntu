@@ -44,7 +44,7 @@ RetroPie-fy Ubuntu Server install. Part I: massage Ubuntu to our liking....
 URL: https://github.com/etheling/retropiefy-ubuntu
 
 This script is derivative of Ubuntu Retropie install script by MisterB
-(https://github.com/MizterB/RetroPie-Setup-Ubuntu), and on ideas and expirements
+(https://github.com/MizterB/RetroPie-Setup-Ubuntu), and of ideas and expirements
 discussed in RetroPie forums (https://retropie.org.uk/forum/post/156839).
 
 This script will perform following actions to prepare OS for RetroPie install:
@@ -264,9 +264,9 @@ function install_dependencies() {
     ## i3    - 
     ## fbset - used by /opt/retropie/supplementary/runcommand/runcommand.sh and not
     ##         installed by default
-    __rpie_deps=(
-	alsa-utils menu git dialog unzip joystick fbset libdrm-dev libdrm-tests radeontop
-	read-edid hwinfo bzip2 emacs-nox
+    __rpie_deps=(	
+	alsa-base alsa-oss alsa-utils menu git dialog unzip joystick fbset
+	libdrm-dev libdrm-tests radeontop read-edid hwinfo bzip2 emacs-nox
 
 	## unify Wayland / X.org experience by using i3 for X.org and Sway for Wayland
 	xorg dbus-x11 wayland-protocols i3 unclutter xdotool sway
@@ -1346,7 +1346,7 @@ function hide_boot_messages() {
     # Add GRUB_RECORDFAIL_TIMEOUT to hide grub boot menu when 'UEFI + single OS + LVM'
     # https://ubuntuforums.org/showthread.php?t=2412153
     # NOTE: adjust timeouts to 0 for faster and more silent boot and update-grub
-    sed "s/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=2\nGRUB_RECORDFAIL_TIMEOUT=2/g" /etc/default/grub
+    sed -i "s/GRUB_TIMEOUT=.*/GRUB_TIMEOUT=2\nGRUB_RECORDFAIL_TIMEOUT=2/g" /etc/default/grub
     
     update-grub
 

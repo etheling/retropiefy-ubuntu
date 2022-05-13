@@ -46,6 +46,7 @@ __extra_cores=(
     lr-ppsspp             # PSP
     lr-picodrive          # Sega32x
     lr-genesis-plus-gx    # SegaCD
+    lr-mesen              # NES (high accuracy, HdPacks support via BIOS/HdPacks/<romname>)
     lr-mame2010
     lr-mame2015
     lr-mame2016

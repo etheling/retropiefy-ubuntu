@@ -165,6 +165,8 @@ function purge_packages() {
 	apt-get purge -y apparmor
 	apt-get purge -y apport
 	apt-get purge -y command-not-found
+	apt-get purge -y systemd-oomd
+	
     } >> "${APT_LOG}"
     
     f_postamble "${FUNCNAME[0]}"
@@ -215,18 +217,22 @@ function disable_swap() {
     f_postamble "${FUNCNAME[0]}"
 }
 
-# there be dragons...not for the weak and timid...
-function disable_cpu_mitigations() {
+# there be dragons...not for the weak and timid...but observed speedup
+# maybe in the ballpark of 10-15% after aplying the kernel parameters
+# https://make-linux-fast-again.com
+# https://transformingembedded.sigmatechnology.se/insight-post/make-linux-fast-again-for-mortals/
+function make_linux_fast_again() {
     f_preamble "${FUNCNAME[0]}"
-    echo "Disable Spectre/Meltdown/... CPU mitigation (Danger, Will Robinson, Danger... "
-
+    echo "Apply various kernel flags to speed up Linux including those that disable CPU vulnerabiliti mitigation (Danger, Will Robinson, Danger...)"
+    
     if grep "mitigations=off" /etc/default/grub; then
 	echo "WARNING: mitigations=off already set in /etc/default/grub. NOT setting again..."
 	return
     fi
 
     backup_file /etc/default/grub
-    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"/&mitigations=off /' /etc/default/grub
+    ## NOTE: some of the flags are for Intel CPUs only. But should be ok even with AMD etc. cpu (e.g. they will be ignored)
+    sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=\"/&noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off /' /etc/default/grub
     update-grub
     f_postamble "${FUNCNAME[0]}"
 }
@@ -281,7 +287,7 @@ if [[ -z "$1" ]]; then
     purge_packages
     disable_swap
     #disable_ipv6
-    disable_cpu_mitigations
+    make_linux_fast_again
     #disable_ufw
 else
     for call_function in "$@"; do

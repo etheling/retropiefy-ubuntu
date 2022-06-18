@@ -48,6 +48,7 @@ This script performs following actions: (all these are optional!)
   * disable swap
   * disable CPU vulnerability mitigations
   * install and enable preload
+- Install MangoHud for Vulkan/OpenGL performance monitoring
 - It can optionally perform following even more questionable 'optimizations':
   * eradicate snapd from the system (eradicate_snapd)
   * disable IPv6 (disable_ipv6)
@@ -245,6 +246,70 @@ function disable_ufw() {
     f_postamble "${FUNCNAME[0]}"
 }
 
+# https://github.com/flightlessmango/MangoHud
+function benchmark_mangohud() {
+    f_preamble "${FUNCNAME[0]}"
+    echo "Install MangoHUD for Vulkan/OpenGL benchmarking via apt-get"
+    echo "See: https://github.com/flightlessmango/MangoHud for latest version and for latest conf:"
+    echo "https://raw.githubusercontent.com/flightlessmango/MangoHud/master/bin/MangoHud.conf"
+
+    local __mconfdir
+    local __mangoconf
+    __mconfdir="${USER_HOME}/.config/MangoHud"
+    __mangoconf="${__mconfdir}//MangoHud.conf"
+    echo "Installing MangoHud (log in ${APT_LOG}) using apt-get"
+    apt-get -y install mangohud >> "${APT_LOG}"
+
+    ## Install MangoHud config (latest in https://raw.githubusercontent.com/flightlessmango/MangoHud/master/bin/MangoHud.conf)
+    mkdir -p "${__mconfdir}"
+    backup_file "${__mangoconf}"
+
+    echo "Writing MangoHud config to ${__mangoconf}"
+    cat << EOF > "${__mangoconf}"    
+# Configuration file for https://github.com/flightlessmango/MangoHud 
+# See https://raw.githubusercontent.com/flightlessmango/MangoHud/master/bin/MangoHud.conf 
+# for complete config file 
+gpu_stats
+gpu_temp
+gpu_core_clock
+gpu_mem_clock
+gpu_load_change
+
+cpu_stats
+cpu_temp
+cpu_mhz
+cpu_load_change
+
+io_stats
+
+vram
+ram
+
+fps
+frametime
+frame_count
+
+engine_version
+gpu_name
+vulkan_driver
+
+histogram
+
+resolution
+
+## because retroarch etc. notifications already use default top-left
+position=top-right
+
+EOF
+        
+    echo "Done. To manually launch e.g. retroarch with 'mangohud /path/to/retroarch ....'"
+    echo "or use: /usr/local/bin/rpie-gfx-hud {on|on-mesa|disable} to enable/disable globally"
+        
+    f_postamble "${FUNCNAME[0]}"
+
+}
+
+
 function repair_permissions() {
     f_preamble "${FUNCNAME[0]}"
     echo "Fix file/folder permissions under ${USER_HOME} (making ${USER} owner of files/dirs)"
@@ -289,6 +354,7 @@ if [[ -z "$1" ]]; then
     #disable_ipv6
     make_linux_fast_again
     #disable_ufw
+    benchmark_mangohud
 else
     for call_function in "$@"; do
         $call_function
